@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>帖子页面</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="posts"></div>
+
+    <script>
+        let headers = new Headers();
+        headers.append('Access-Control-Allow-Origin', 'http://localhost:5500');
+        headers.append('Access-Control-Allow-Credentials', 'true'); 
+
+        fetch('http://localhost:8080/api/v1/posts', {
+            headers: headers
+        })
+            .then(response => response.json())
+            .then(posts => {
+                console.log(posts);
+                const postsContainer = document.getElementById('posts');
+                posts.content.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+
+                    const title = document.createElement('h2');
+                    title.className = 'title';
+                    title.textContent = post.title;
+                    postElement.appendChild(title);
+
+                    const description = document.createElement('p');
+                    description.className = 'description';
+                    description.textContent = post.description;
+                    postElement.appendChild(description);
+
+                    const content = document.createElement('p');
+                    content.className = 'content';
+                    content.textContent = post.content;
+                    postElement.appendChild(content);
+
+                    const image = document.createElement('img');
+                    image.className = 'post-image';
+                    image.src = post.image;
+                    image.alt = post.title;
+                    postElement.appendChild(image);
+
+                    const date = document.createElement('p');
+                    date.className = 'date';
+                    date.textContent = '创建时间: ' + post.createDateTime;
+                    postElement.appendChild(date);
+
+                    const commentsElement = document.createElement('div');
+                    commentsElement.className = 'comments';
+                    const commentsTitle = document.createElement('h3');
+                    commentsTitle.textContent = '评论:';
+                    commentsElement.appendChild(commentsTitle);
+                    post.comments.forEach(comment => {
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment';
+
+                        const commenter = document.createElement('p');
+                        commenter.className = 'commenter';
+                        commenter.textContent = comment.name;
+                        commentElement.appendChild(commenter);
+
+                        const commentContent = document.createElement('p');
+                        commentContent.className = 'comment-content';
+                        commentContent.textContent = comment.body;
+                        commentElement.appendChild(commentContent);
+
+                        commentsElement.appendChild(commentElement);
+                    });
+                    postElement.appendChild(commentsElement);
+
+                    postsContainer.appendChild(postElement);
+                });
+            });
+    </script>
+</body>
+</html>
